@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  php-fpm:
+    container_name: sf5_3
+    build:
+      context: ./php-fpm
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}
+    volumes:
+      - ../src:/var/www
+
+  nginx:
+    container_name: sf5_3_nginx
+    build:
+      context: ./nginx
+    volumes:
+      - ../src:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites/:/etc/nginx/sites-available
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+      - ./logs:/var/log
+    depends_on:
+      - php-fpm
+    ports:
+      - "80:80"
+      - "443:443"
+
+
