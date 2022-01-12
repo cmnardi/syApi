@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
@@ -14,22 +15,26 @@ class Post
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"list_posts", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Serializer\Groups({"list_posts", "detail"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Serializer\Groups({"detail"})
      */
     private $text;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
+     * @Serializer\Groups({"list_posts", "detail"})
      */
     private $author;
 

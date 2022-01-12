@@ -9,13 +9,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\View\View;
 
-class PostController extends AbstractController
+
+class PostController extends AbstractFOSRestController
 {
     /**
      * @Route("/post", name="post_create", methods={"POST"})
+     * @Rest\View(serializerGroups={"detail"})
      */
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         $this->denyAccessUnlessGranted('ROLE_WRITER');
         $user = $this->getUser();
@@ -24,11 +29,12 @@ class PostController extends AbstractController
             ->setText($request->get('text'))
             ->setTitle($request->get('title'));
         $this->persist($post);
-        return $this->json(['post' => $post]);
+        return View::create(['post' => $post]);
     }
 
     /**
      * @Route("/post/{id}", name="post_update", methods={"PUT"})
+     * @Rest\View(serializerGroups={"detail"})
      */
     public function update($id, Request $request, PostRepository $postRepository): Response
     {
@@ -46,6 +52,7 @@ class PostController extends AbstractController
 
     /**
      * @Route("/post/{id}", name="post_delete", methods={"DELETE"})
+     * @Rest\View(serializerGroups={"detail"})
      */
     public function delete($id, PostRepository $postRepository): Response
     {
@@ -67,14 +74,15 @@ class PostController extends AbstractController
 
     /**
      * @Route("/post/my-posts", name="post_list_my_posts", methods={"GET"})
+     * @Rest\View(serializerGroups={"list_posts"})
      */
-    public function listMyPosts(PostRepository $postRepository): Response
+    public function listMyPosts(PostRepository $postRepository): View
     {
         try {
             $user = $this->getUser();
             $posts = $postRepository->findByAuthor($user);
             
-            return $this->json([
+            return View::create([
                 'result' => 'success',
                 'data' => $posts
             ]);

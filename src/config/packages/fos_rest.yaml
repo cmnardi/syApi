@@ -1,0 +1,18 @@
+# Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
+fos_rest:
+   param_fetcher_listener:  false
+   allowed_methods_listener:  true
+   routing_loader: false
+   view:
+       view_response_listener:  true
+   exception:
+       codes:
+           App\Exception\AccessDeniedException: 403
+           Symfony\Component\Security\Core\Exception\AccessDeniedException: 403
+           App\Exception\NotFoundException: 404
+       messages:
+          'Symfony\Component\Security\Core\Exception\AccessDeniedException': true
+          'App\Exception\NotFoundException': true
+   format_listener:
+       rules:
+           - { path: ^/*, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
