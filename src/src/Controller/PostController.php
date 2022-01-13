@@ -29,24 +29,22 @@ class PostController extends AbstractFOSRestController
             ->setText($request->get('text'))
             ->setTitle($request->get('title'));
         $this->persist($post);
-        return View::create(['post' => $post]);
+        return View::create(['post' => $post], Response::HTTP_CREATED);
     }
 
     /**
      * @Route("/post/{id}", name="post_update", methods={"PUT"})
      * @Rest\View(serializerGroups={"detail"})
      */
-    public function update($id, Request $request, PostRepository $postRepository): Response
+    public function update($id, Request $request, PostRepository $postRepository): View
     {
         try {
             $post = $this->checkPost($id, $postRepository);
             $post->setText($request->get('text'))->setTitle($request->get('title'));
             $this->persist($post);
-            return $this->json(['post' => $post]);
+            return View::create(['post' => $post], Response::HTTP_OK);
         } catch (\Exception $ex) {
-            $response = new JsonResponse(['message' => $ex->getMessage()]);
-            $response->setStatusCode($ex->getCode());
-            return $response;
+            return View::create(['message' => $ex->getMessage()], $ex->getCode());
         }
     }
 
@@ -54,7 +52,7 @@ class PostController extends AbstractFOSRestController
      * @Route("/post/{id}", name="post_delete", methods={"DELETE"})
      * @Rest\View(serializerGroups={"detail"})
      */
-    public function delete($id, PostRepository $postRepository): Response
+    public function delete($id, PostRepository $postRepository): View
     {
         try {
             $post = $this->checkPost($id, $postRepository);
@@ -62,13 +60,9 @@ class PostController extends AbstractFOSRestController
             $em = $this->getDoctrine()->getManager();
             $em->remove($post);
             $em->flush();
-            return $this->json([
-                'result' => 'success'
-            ]);
+            return View::create(['result' => 'success'], Response::HTTP_ACCEPTED);
         } catch (\Exception $ex) {
-            $response = new JsonResponse(['message' => $ex->getMessage()]);
-            $response->setStatusCode($ex->getCode());
-            return $response;
+            return View::create(['message' => $ex->getMessage()], $ex->getCode());
         }
     }
 

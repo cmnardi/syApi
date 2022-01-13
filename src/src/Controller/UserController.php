@@ -16,22 +16,18 @@ class UserController extends AbstractFOSRestController
      * @Route("/user", name="user", methods={"GET"})
      * @Rest\View(serializerGroups={"list"})
      */
-    public function index(UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository): View
     {
-        try {
-            $this->denyAccessUnlessGranted('ROLE_ADMINISTRATOR');
-            $users = $userRepository->findAll();
-            return View::create(['result' => 'ok', 'data' => $users]);
-        } catch (\Exception $ex) {
-            return new AccessDeniedException('user');
-        }
+        $this->denyAccessUnlessGranted('ROLE_ADMINISTRATOR');
+        $users = $userRepository->findAll();
+        return View::create(['result' => 'ok', 'data' => $users]);
     }
 
     /**
      * @Route("/me", name="me", methods={"GET"})
      * @Rest\View(serializerGroups={"detail"})
      */
-    public function me()
+    public function me(): View
     {
         $user = $this->getUser();
         return View::create([$user]);
