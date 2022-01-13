@@ -40,6 +40,6 @@ security:
 
         # the 'path' value can be any valid regular expression
         # (this one will match URLs like /api/post/7298 and /api/comment/528491)
-        - { path: ^/api/(post|comment)/\d+$, roles: ROLE_USER }
+        - { path: ^/post, roles: PUBLIC_ACCESS }
         
 

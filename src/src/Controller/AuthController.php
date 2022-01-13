@@ -38,22 +38,22 @@ class AuthController extends AbstractController
      */
     public function login(Request $request, UserRepository $userRepository, UserPasswordEncoderInterface $encoder)
     {
-            $user = $userRepository->findOneBy(['email'=> $request->get('email'),]);
-            if (!$user || !$encoder->isPasswordValid($user, $request->get('password'))) {
-                $response = new JsonResponse(['message' => 'email or password is wrong.',]);
-                $response->setStatusCode(JsonResponse::HTTP_UNAUTHORIZED);
-                return $response;
-            }
-            $payload = [
-                "user" => $user->getUsername(),
-                "exp"  => (new \DateTime())->modify("+300 minutes")->getTimestamp(),
-            ];
+        $user = $userRepository->findOneBy(['email'=> $request->get('email'),]);
+        if (!$user || !$encoder->isPasswordValid($user, $request->get('password'))) {
+            $response = new JsonResponse(['message' => 'email or password is wrong.',]);
+            $response->setStatusCode(JsonResponse::HTTP_UNAUTHORIZED);
+            return $response;
+        }
+        $payload = [
+            "user" => $user->getUsername(),
+            "exp"  => (new \DateTime())->modify("+300 minutes")->getTimestamp(),
+        ];
 
-            $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
-            return $this->json([
-                'message' => 'success!',
-                'token' => sprintf('Bearer %s', $jwt),
-            ]);
+        $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
+        return $this->json([
+            'message' => 'success!',
+            'token' => sprintf('Bearer %s', $jwt),
+        ]);
     }
 
 }

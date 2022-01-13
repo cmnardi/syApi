@@ -16,6 +16,24 @@ use FOS\RestBundle\View\View;
 
 class PostController extends AbstractFOSRestController
 {
+
+    /**
+     * @Route("/post", name="post_list", methods={"GET"})
+     * @Rest\View(serializerGroups={"list_posts"})
+     */
+    public function list(PostRepository $postRepository): View
+    {
+        try {
+            $posts = $postRepository->findAll();
+            return View::create([
+                'result' => 'success',
+                'data' => $posts
+            ]);
+        } catch (\Exception $ex) {
+            return View::create(['message' => $ex->getMessage()], $ex->getCode());
+        }
+    }
+
     /**
      * @Route("/post", name="post_create", methods={"POST"})
      * @Rest\View(serializerGroups={"detail"})
@@ -29,7 +47,7 @@ class PostController extends AbstractFOSRestController
             ->setText($request->get('text'))
             ->setTitle($request->get('title'));
         $this->persist($post);
-        return View::create(['post' => $post], Response::HTTP_CREATED);
+        return View::create(['result' => 'success', 'post' => $post], Response::HTTP_CREATED);
     }
 
     /**
@@ -38,11 +56,12 @@ class PostController extends AbstractFOSRestController
      */
     public function update($id, Request $request, PostRepository $postRepository): View
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
         try {
             $post = $this->checkPost($id, $postRepository);
             $post->setText($request->get('text'))->setTitle($request->get('title'));
             $this->persist($post);
-            return View::create(['post' => $post], Response::HTTP_OK);
+            return View::create(['result' => 'success', 'post' => $post], Response::HTTP_OK);
         } catch (\Exception $ex) {
             return View::create(['message' => $ex->getMessage()], $ex->getCode());
         }
@@ -54,6 +73,7 @@ class PostController extends AbstractFOSRestController
      */
     public function delete($id, PostRepository $postRepository): View
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
         try {
             $post = $this->checkPost($id, $postRepository);
 
@@ -72,6 +92,7 @@ class PostController extends AbstractFOSRestController
      */
     public function listMyPosts(PostRepository $postRepository): View
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
         try {
             $user = $this->getUser();
             $posts = $postRepository->findByAuthor($user);
@@ -81,10 +102,7 @@ class PostController extends AbstractFOSRestController
                 'data' => $posts
             ]);
         } catch (\Exception $ex) {
-            die($ex->getMessage());
-            $response = new JsonResponse(['message' => $ex->getMessage()]);
-            $response->setStatusCode($ex->getCode());
-            return $response;
+            return View::create(['message' => $ex->getMessage()], $ex->getCode());
         }
     }
 
