@@ -7,6 +7,7 @@ class PostTest extends AbstractApiController
 {
 
     private $token = null;
+    private $idPost = null;
 
     protected function getToken()
     {
@@ -39,30 +40,59 @@ class PostTest extends AbstractApiController
         );
         
         $this->assertEquals(201, $response->getStatusCode());
-    }
-
-    public function testUpdate()
-    {
-        $this->token = $this->createToken(User::ROLE_WRITER);
+        $json = json_decode($response->getContent(), true);
+        $this->assertIsArray($json);
+        $this->idPost = $json['post']['id'];
+        $this->assertEquals($json['result'], 'success');
+   
+        $uri = '/post/' . $this->idPost;
         /** @var Symfony\Component\HttpFoundation\JsonResponse $response */
         $response = $this->makeRequest(
             'PUT',
-            '/post/1',
+            $uri,
             ['title' => 'Edited post title', 'text' => 'Content with something']
         );
         
         $this->assertEquals(200, $response->getStatusCode());
+        $json = json_decode($response->getContent(), true);
+        $this->assertIsArray($json);
+        $this->assertEquals($json['result'], 'success');
+
+
+        /** @var Symfony\Component\HttpFoundation\JsonResponse $response */
+        $response = $this->makeRequest(
+            'DELETE',
+            '/post/' . $this->idPost
+        );
+        
+        $this->assertEquals(202, $response->getStatusCode());
     }
 
-    public function testDelete()
+    public function testListMyPosts()
     {
         $this->token = $this->createToken(User::ROLE_WRITER);
         /** @var Symfony\Component\HttpFoundation\JsonResponse $response */
         $response = $this->makeRequest(
-            'DELETE',
-            '/post/1'
+            'GET',
+            '/post/my-posts'
         );
-        
-        $this->assertEquals(202, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
+        $json = json_decode($response->getContent(), true);
+        $this->assertIsArray($json);
+        $this->assertEquals($json['result'], 'success');
+    }
+
+    public function testListAllPosts()
+    {
+        $this->token = null;
+        /** @var Symfony\Component\HttpFoundation\JsonResponse $response */
+        $response = $this->makeRequest(
+            'GET',
+            '/post'
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $json = json_decode($response->getContent(), true);
+        $this->assertIsArray($json);
+        $this->assertEquals($json['result'], 'success');
     }
 }
