@@ -1,5 +1,7 @@
 <?php
+
 // src/Security/TokenAuthenticator.php
+
 namespace App\Security;
 
 use App\Entity\User;
@@ -42,7 +44,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-            return (!is_null($request->headers->get('Authorization'))) ? $request->headers->get('Authorization') : false;
+        return (!is_null($request->headers->get('Authorization'))) ? $request->headers->get('Authorization') : false;
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)

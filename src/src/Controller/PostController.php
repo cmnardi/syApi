@@ -13,10 +13,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\View\View;
 
-
 class PostController extends AbstractFOSRestController
 {
-
     /**
      * @Route("/post", name="post_list", methods={"GET"})
      * @Rest\View(serializerGroups={"list_posts"})
@@ -96,7 +94,7 @@ class PostController extends AbstractFOSRestController
         try {
             $user = $this->getUser();
             $posts = $postRepository->findByAuthor($user);
-            
+
             return View::create([
                 'result' => 'success',
                 'data' => $posts
@@ -111,7 +109,7 @@ class PostController extends AbstractFOSRestController
         $user = $this->getUser();
         $post = $postRepository->find($id);
         if (is_null($post)) {
-            throw new \Exception('Post not fount', JsonResponse::HTTP_NOT_FOUND );
+            throw new \Exception('Post not fount', JsonResponse::HTTP_NOT_FOUND);
         }
         if ($user->getId() != $post->getAuthor()->getId()) {
             throw new \Exception('You cannot change another\'s author post', JsonResponse::HTTP_BAD_REQUEST);

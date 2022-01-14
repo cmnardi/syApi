@@ -15,20 +15,20 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  */
 class User implements UserInterface
 {
-    const ROLE_ADMINISTRATOR = 'ROLE_ADMINISTRATOR';
-    const ROLE_WRITER = 'ROLE_WRITER';
+    public const ROLE_ADMINISTRATOR = 'ROLE_ADMINISTRATOR';
+    public const ROLE_WRITER = 'ROLE_WRITER';
 
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Groups({"list", "detail"})     
+     * @Serializer\Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Serializer\Groups({"list", "detail", "list_posts"})     
+     * @Serializer\Groups({"list", "detail", "list_posts"})
      */
     private $email;
 
@@ -51,7 +51,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Post::class, mappedBy="author")
-     * @Serializer\Groups({"detail"})   
+     * @Serializer\Groups({"detail"})
      */
     private $posts;
 

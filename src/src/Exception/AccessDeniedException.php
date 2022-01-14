@@ -10,5 +10,4 @@ use Symfony\Component\Routing\Exception\ExceptionInterface;
  */
 class AccessDeniedException extends \RuntimeException implements ExceptionInterface
 {
-
 }

@@ -10,5 +10,4 @@ use Symfony\Component\Routing\Exception\ExceptionInterface;
  */
 class NotFoundException extends \RuntimeException implements ExceptionInterface
 {
-
 }

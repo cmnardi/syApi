@@ -14,9 +14,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends AbstractController
 {
-     /**
-     * @Route("/register", name="register", methods={"POST"})
-     */
+    /**
+    * @Route("/register", name="register", methods={"POST"})
+    */
     public function register(Request $request, UserPasswordEncoderInterface $encoder)
     {
         $password = $request->get('password');
@@ -55,5 +55,4 @@ class AuthController extends AbstractController
             'token' => sprintf('Bearer %s', $jwt),
         ]);
     }
-
 }
