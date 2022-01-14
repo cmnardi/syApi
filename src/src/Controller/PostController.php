@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Repository\PostRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,12 +11,22 @@ use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\View\View;
+use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 
 class PostController extends AbstractFOSRestController
 {
     /**
      * @Route("/post", name="post_list", methods={"GET"})
      * @Rest\View(serializerGroups={"list_posts"})
+     * @OA\Tag(name="Post")
+     * @OA\Response(
+     *     response=200,
+     *     description="List all posts",
+     *     @Model(type=Post::class)
+     * )
+     *
      */
     public function list(PostRepository $postRepository): View
     {
@@ -35,6 +44,19 @@ class PostController extends AbstractFOSRestController
     /**
      * @Route("/post", name="post_create", methods={"POST"})
      * @Rest\View(serializerGroups={"detail"})
+     * @OA\Tag(name="Post")
+     * @OA\Response(
+     *     response=201,
+     *     description="Create a new post",
+     *     @Model(type=Post::class)
+     * )
+     * @OA\Parameter(
+     *     name="title",in="query", description="Main title of the post", @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="text",in="query", description="Content of the post", @OA\Schema(type="string")
+     * )
+     * @Security(name="Bearer")
      */
     public function create(Request $request): View
     {
@@ -51,6 +73,19 @@ class PostController extends AbstractFOSRestController
     /**
      * @Route("/post/{id}", name="post_update", methods={"PUT"})
      * @Rest\View(serializerGroups={"detail"})
+     * @OA\Tag(name="Post")
+     * @OA\Response(
+     *     response=200,
+     *     description="Update a post",
+     *     @Model(type=Post::class)
+     * )
+     * @OA\Parameter(
+     *     name="title",in="query", description="The new title of the post", @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name="text",in="query", description="The new content of the post", @OA\Schema(type="string")
+     * )
+     * @Security(name="Bearer")
      */
     public function update($id, Request $request, PostRepository $postRepository): View
     {
@@ -68,6 +103,13 @@ class PostController extends AbstractFOSRestController
     /**
      * @Route("/post/{id}", name="post_delete", methods={"DELETE"})
      * @Rest\View(serializerGroups={"detail"})
+     * @OA\Tag(name="Post")
+     * @OA\Response(
+     *     response=202,
+     *     description="Delete a  post",
+     *     @Model(type=Post::class)
+     * )
+     * @Security(name="Bearer")
      */
     public function delete($id, PostRepository $postRepository): View
     {
@@ -87,6 +129,13 @@ class PostController extends AbstractFOSRestController
     /**
      * @Route("/post/my-posts", name="post_list_my_posts", methods={"GET"})
      * @Rest\View(serializerGroups={"list_posts"})
+     * @OA\Tag(name="Post")
+     * @OA\Response(
+     *     response=201,
+     *     description="List posts of the logged user",
+     *     @Model(type=Post::class)
+     * )
+     * @Security(name="Bearer")
      */
     public function listMyPosts(PostRepository $postRepository): View
     {
@@ -104,6 +153,10 @@ class PostController extends AbstractFOSRestController
         }
     }
 
+    /**
+     * Check if the post exists, and check if the owner is the logged user
+     * @return Post
+     */
     private function checkPost($id, PostRepository $postRepository): Post
     {
         $user = $this->getUser();
@@ -117,7 +170,12 @@ class PostController extends AbstractFOSRestController
         return $post;
     }
 
-    private function persist(Post $post)
+    /**
+     * Persist the post
+     * @param Post $post
+     * @return void
+     */
+    private function persist(Post $post): void
     {
         $em = $this->getDoctrine()->getManager();
         $em->persist($post);
