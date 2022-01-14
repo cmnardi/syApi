@@ -13,5 +13,6 @@ nelmio_api_doc:
         security:
             - Bearer: []
     areas: # to filter documented areas
+        disable_default_routes: true
         path_patterns:
-            - ^/(?!/doc$) # Accepts routes under /api except /api/doc
+            - ^/(?!api/doc)|(!_error) # Accepts routes except /api/doc
